@@ -100,40 +100,6 @@ void init_windows()
     scrollok(output_win, TRUE);
 }
 
-void resize_windows()
-{
-    /* get new terminal dimensions */
-    int height, htop, hbot, width;
-    getmaxyx(stdscr, height, width);
-    htop = ((height / 3) * 2) - 2;
-    hbot = (height / 3) - 2;
-    width -= 2;
-    
-    init_pair(1, COLOR_WHITE, COLOR_BLUE);
-    bkgd(COLOR_PAIR(1));
-    refresh();
-
-    /* clear old borders */
-    wclear(output_win);
-    wrefresh(output_win);
-    wclear(input_win);
-    wrefresh(input_win);
-
-    /* resize and draw new border */
-    wresize(output_win, htop, width);
-    box(output_win, 0, 0);
-    wrefresh(output_win);
-
-    /* resize, move input_win window up or down
-     * (relative to height of output_win window),
-     * and draw new border
-     */
-    wresize(input_win, hbot, width);
-    mvwin(input_win, htop + 3, 1);
-    box(input_win, 0, 0);
-    wrefresh(input_win);
-}
-
 /**
  * The function `print_to_window` prints a message to a window and automatically scrolls the window if
  * the cursor is in the last line.
@@ -313,7 +279,7 @@ void *input_thread(void *arg)
             pthread_mutex_unlock(&mutex);
         }
         // Out of MAX_BUFFER_SIZE
-        // Send current input
+        // Clear current input
         else
         {
             pthread_mutex_lock(&mutex);
